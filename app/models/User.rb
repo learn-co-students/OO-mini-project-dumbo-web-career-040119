@@ -10,7 +10,7 @@ class User #✅#✅#✅
     def self.all #✅
         @@all
     end
-    ##PRIVATE
+    ##Helper
     def recipe_cards #✅
         #retrieves all recipe cards that are associated with a particular user
         RecipeCard.all.select{|rc_instance| rc_instance.user == self}
@@ -21,7 +21,10 @@ class User #✅#✅#✅
         Allergy.all.select{|allergy_instance| allergy_instance.user == self}
     end
 
-    ##PUBLIC
+    def ranked_recipe_cards #lowest rating to to highest
+        self.recipe_cards.sort_by{|rc_instance| rc_instance.rating}
+    end 
+    ## Main Methods
     def recipes #✅
         #retrieves all of a user's recipes
         self.recipe_cards.map {|rc_instance| rc_instance.recipe.name}
@@ -42,12 +45,10 @@ class User #✅#✅#✅
     end
 
     def top_three_recipes #✅
-        sorted_recipes = self.recipe_cards.sort_by{|rc_instance| rc_instance.rating}
-        top_recipes = []
-        top_recipes << '1. ' + sorted_recipes[-1].recipe.name
-        top_recipes << '2. ' + sorted_recipes[-2].recipe.name
-        top_recipes << '3. ' + sorted_recipes[-3].recipe.name
-        top_recipes
+        top_three_recipe_cards = self.ranked_recipe_cards.reverse.slice(0,3)
+        top_three_recipe_cards.map.with_index(1) do |rc_instance, index| 
+            "#{index}. " + rc_instance.recipe.name 
+        end
     end
 
     def most_recent_recipe #✅

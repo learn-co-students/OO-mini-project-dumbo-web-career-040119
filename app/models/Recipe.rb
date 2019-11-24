@@ -19,7 +19,7 @@ class Recipe #✅#✅#✅
         recipes_used.max_by{|recipe_instance| recipes_used.count(recipe_instance) }
     end
 
-    ## private methods
+    ## helper methods
     def recipe_cards
         RecipeCard.all.select{|rc_instance| rc_instance.recipe == self}
         #returns an array of recipe card instances associated with this recipe
@@ -30,7 +30,14 @@ class Recipe #✅#✅#✅
         #returns an array of recipe ingredient instances associated with a recipe
     end
 
-    ##public methods
+    def known_allergies
+        Allergy.all.select do |allergy_instance|
+            self.ingredients.include?(allergy_instance.ingredient.name)
+        end
+        #returns an array of all the documented allergy instances that are associated with an 
+        #ingredient in a particular recipe
+    end
+    ##main methods
     def users #✅
         self.recipe_cards.map{|rc_instance| rc_instance.user.name}
         #returns an array of users that have the recipe card a particular recipe
@@ -51,12 +58,7 @@ class Recipe #✅#✅#✅
     def allergens #✅
         # should return all of the `Ingredient`s in a particular recipe 
         # that are allergens for `User`s in our system. 
-
-        known_allergies = Allergy.all.select{|allergy_instance|
-            self.ingredients.include?(allergy_instance.ingredient.name)
-        }
-        allergens = known_allergies.map{|allergy_instance| allergy_instance.ingredient.name}
-
+        allergens = self.known_allergies.map{|allergy_instance| allergy_instance.ingredient.name}
         allergens.uniq
     end
 
